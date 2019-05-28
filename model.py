@@ -1,5 +1,5 @@
 import random
-
+import json
 
 STEVILO_DOVOLJENIH_NAPAK = 10
 PRAVILNA_CRKA = "+"
@@ -10,9 +10,12 @@ PORAZ = "X"
 ZACETEK = "Z"
 
 class Igra:
-    def __init__(self,niz,seznam=[]):
+    def __init__(self,niz,seznam=None):
         self.geslo = niz
-        self.crke = seznam
+        if seznam is None:
+            self.crke = []
+        else:
+            self.crke = seznam
 
     def napacne_crke(self):
         seznam_napacnih=[]
@@ -87,8 +90,10 @@ def nova_igra():
 
 
 class Vislice:
-    def __init__(self):
+    def __init__(self,datoteka_s_stanjem):
         self.igre={}
+        self.datoteke_s_stanjem = datoteka_s_stanjem
+
 
     def prost_id_igre(self):
         if self.igre == {}:
@@ -100,6 +105,7 @@ class Vislice:
         id = self.prost_id_igre()
         igra = nova_igra()
         self.igre[id]= (igra, ZACETEK)
+        self.zapisi_igre_v_datoteko()
         return id
 
     def ugibaj(self,id,crka):
@@ -109,3 +115,16 @@ class Vislice:
 
 
 
+    def nalozi_igre_iz_datoteke(self):
+        with open(self.datoteka_s_stanjem) as f:
+            igre = json.load(f)
+            self.igre ={}
+            for id_igre, vrednosti in igre.items():
+                self.igre[int(id_igre)] = (igra(vrednosti['geslo'], crke=vrednosti['crke']), vrednosti['poskus'])
+
+    def zapisi_igre_v_datoteko(self):
+        with open(self.datoteke_s_stanjem, 'w') as f:
+            igre = {}
+            for id_igre, (igra,stanje) in self.igra.items():
+                igre[id_igre]= {'geslo': igra.geslo, 'crke' : igra.crke, 'poskus': stanje}
+                json.dump(igre,f)
