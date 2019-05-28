@@ -92,7 +92,7 @@ def nova_igra():
 class Vislice:
     def __init__(self,datoteka_s_stanjem):
         self.igre={}
-        self.datoteke_s_stanjem = datoteka_s_stanjem
+        self.datoteka_s_stanjem = datoteka_s_stanjem
 
 
     def prost_id_igre(self):
@@ -120,11 +120,11 @@ class Vislice:
             igre = json.load(f)
             self.igre ={}
             for id_igre, vrednosti in igre.items():
-                self.igre[int(id_igre)] = (igra(vrednosti['geslo'], crke=vrednosti['crke']), vrednosti['poskus'])
+                self.igre[int(id_igre)] = (Igra(vrednosti['geslo'], crke=vrednosti['crke']), vrednosti['poskus'])
 
     def zapisi_igre_v_datoteko(self):
-        with open(self.datoteke_s_stanjem, 'w') as f:
+        with open(self.datoteka_s_stanjem, 'w') as f:
             igre = {}
-            for id_igre, (igra,stanje) in self.igra.items():
+            for id_igre, (igra,stanje) in self.igre.items():
                 igre[id_igre]= {'geslo': igra.geslo, 'crke' : igra.crke, 'poskus': stanje}
                 json.dump(igre,f)
